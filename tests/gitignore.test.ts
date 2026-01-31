@@ -23,14 +23,15 @@ describe('gitignore module', () => {
     });
 
     it('should detect duplicate entries with different formats', () => {
+      // Updated normalization to also strip leading "/"
       const normalizeEntry = (entry: string) => 
-        entry.replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/$/, '');
+        entry.replace(/\\/g, '/').replace(/^\.\//, '').replace(/^\//, '').replace(/\/$/, '');
       
       const entries = ['.docs', '.docs/', '/.docs', '/.docs/'];
       const normalized = entries.map(e => normalizeEntry(e));
       
-      // All should normalize to the same value
-      expect(normalized.every(n => n === '.docs' || n === '/.docs')).toBe(true);
+      // All should normalize to the same value - check unique set size
+      expect(new Set(normalized).size).toBe(1);
     });
   });
 

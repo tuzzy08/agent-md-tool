@@ -105,6 +105,11 @@ export async function downloadLlmsTxt(
     };
 
   } catch (error: any) {
+    // Re-throw validation errors (thrown before network request) without wrapping
+    if (error.message?.includes('Empty or invalid llms.txt')) {
+      throw error;
+    }
+    // Handle network/HTTP errors
     if (error.code === 'ECONNABORTED') {
       throw new Error(`Timeout fetching ${url}`);
     }

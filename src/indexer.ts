@@ -79,7 +79,11 @@ export function groupByDirectory(files: string[]): IndexedDirectory {
  */
 export function generateCompressedIndex(grouped: IndexedDirectory, rootPath: string): string {
   const lines: string[] = [];
-  const rootName = path.basename(rootPath);
+  // Handle case where path.basename returns empty (e.g., for filesystem roots)
+  let rootName = path.basename(rootPath);
+  if (!rootName || rootName === '') {
+    rootName = path.parse(rootPath).root || rootPath;
+  }
   
   // Sort directories for consistent output
   const sortedDirs = Object.keys(grouped).sort((a, b) => {

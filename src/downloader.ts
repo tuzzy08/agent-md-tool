@@ -108,12 +108,20 @@ async function fetchRepoTreeWithFallback(
 async function fetchRepoTree(owner: string, repo: string, branch: string): Promise<GitHubTreeItem[]> {
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
   
+  // Build headers with optional authentication
+  const headers: Record<string, string> = {
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'agent-md-tool'
+  };
+  
+  const githubToken = process.env.GITHUB_TOKEN;
+  if (githubToken) {
+    headers['Authorization'] = `token ${githubToken}`;
+  }
+  
   try {
     const response = await axios.get<GitHubTreeResponse>(apiUrl, {
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'agent-md-tool'
-      },
+      headers,
       timeout: 30000 // 30 second timeout
     });
 
@@ -214,11 +222,19 @@ function filterMarkdownFiles(tree: GitHubTreeItem[], targetPath: string): GitHub
 async function downloadFile(owner: string, repo: string, branch: string, filePath: string): Promise<string> {
   const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`;
   
+  // Build headers with optional authentication
+  const headers: Record<string, string> = {
+    'User-Agent': 'agent-md-tool'
+  };
+  
+  const githubToken = process.env.GITHUB_TOKEN;
+  if (githubToken) {
+    headers['Authorization'] = `token ${githubToken}`;
+  }
+  
   try {
     const response = await axios.get(rawUrl, {
-      headers: {
-        'User-Agent': 'agent-md-tool'
-      },
+      headers,
       responseType: 'text',
       timeout: 15000 // 15 second timeout per file
     });
@@ -256,8 +272,8 @@ export async function downloadDocs(
   // Parse GitHub URL
   const { owner, repo, branch: urlBranch } = parseGitHubUrl(source);
   
-  // Determine which branch to use
-  const preferredBranch = options.branch !== 'main' ? options.branch : (urlBranch || options.branch);
+  // Determine which branch to use: URL branch wins when present, otherwise use options.branch
+  const preferredBranch = urlBranch || options.branch;
   
   // Generate source name
   const sourceName = options.sourceName || generateSourceName(owner, repo);

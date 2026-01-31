@@ -33,13 +33,17 @@ async function createNewFileContent(outputFile: string): Promise<string> {
   // Get project context from package.json
   const context = await getProjectContext();
   
+  // Use safe fallbacks for potentially undefined properties
+  const overview = context.overview?.trim() || '## Project Overview\n\n<!-- Add your project description here -->';
+  const setup = context.setup?.trim() || '## Setup Commands\n\n```bash\n# npm install\n# npm run dev\n```';
+  
   return `# ${fileName}
 
 This file provides context and instructions for AI coding agents.
 
-${context.overview}
+${overview}
 
-${context.setup}
+${setup}
 
 ## Code Style
 
@@ -102,6 +106,13 @@ export function updateContent(
       `Malformed documentation index found for "${sourceName}".\n\n` +
       `Found start marker but missing end marker.\n` +
       `Please manually fix or remove the incomplete block in your output file.`
+    );
+  } else if (endIdx !== -1 && startIdx === -1) {
+    // Malformed: has end but no start marker (orphaned end marker)
+    throw new Error(
+      `Malformed documentation index found for "${sourceName}".\n\n` +
+      `Found orphaned end marker but missing start marker.\n` +
+      `Please manually remove the orphaned end marker from your output file.`
     );
   } else {
     // Append new block

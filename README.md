@@ -56,7 +56,7 @@ agent-md-tool https://example.com/llm.txt
 | `--docs-dir`    | `-d`  | Directory to store downloaded docs             | `.docs`        |
 | `--path`        | `-p`  | Subdirectory in repo to download (GitHub only) | Auto-detected  |
 | `--source-name` | `-n`  | Custom name for the documentation source       | Auto-generated |
-| `--branch`      | `-b`  | Git branch to download from (GitHub only)      | Auto-detected  |
+| `--branch`      | `-b`  | Git branch to download from (GitHub only)      | `main`         |
 
 ### List Indexed Sources
 
