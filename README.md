@@ -96,6 +96,28 @@ For GitHub repositories, if you don't specify a path, the tool automatically loo
 
 After downloading, the tool automatically adds the documentation directory (e.g., `.docs/`) to your `.gitignore` file to keep your repo clean.
 
+### GitHub Token (Optional)
+
+For higher rate limits or private repository access, you can set a GitHub token:
+
+```bash
+# Linux/macOS
+export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
+
+# Windows (PowerShell)
+$env:GITHUB_TOKEN="ghp_xxxxxxxxxxxx"
+
+# Windows (Command Prompt)
+set GITHUB_TOKEN=ghp_xxxxxxxxxxxx
+```
+
+**Benefits:**
+
+- **Rate limits**: Unauthenticated: 60 requests/hour → Authenticated: 5,000 requests/hour
+- **Private repos**: Required for accessing private repositories
+
+You can create a token at [github.com/settings/tokens](https://github.com/settings/tokens) with `repo` scope for private repos, or no scopes for public repos only.
+
 ### Compressed Index Format
 
 The tool creates a token-efficient index format:
